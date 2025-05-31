@@ -48,19 +48,23 @@ pipeline {
         }
 
         stage('Deploy to Docker') {
-            steps {
-                script {
-                    def imageName = "anoop896/spring-boot-notes"
-                    def imageTag = "latest"
+    steps {
+        script {
+            def imageName = "anoop896/spring-boot-notes"
+            def imageTag = "latest"
 
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        bat "docker login -u %DOCKER_USER% --password-stdin < echo %DOCKER_PASS%"
-                        bat "docker build -t ${imageName}:${imageTag} ."
-                        bat "docker push ${imageName}:${imageTag}"
-                    }
-                }
+            withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                bat '''
+                echo %DOCKER_PASS% > docker-pass.txt
+                docker login -u %DOCKER_USER% --password-stdin < docker-pass.txt
+                del docker-pass.txt
+                docker build -t anoop896/spring-boot-notes:latest .
+                docker push anoop896/spring-boot-notes:latest
+                '''
             }
         }
+    }
+}
 
         stage('Release to Production') {
             steps {
