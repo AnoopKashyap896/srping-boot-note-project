@@ -3,7 +3,7 @@ pipeline {
    environment {
     JAVA_HOME = "C:\\Program Files\\Java\\jdk-17"
     PATH = "${env.JAVA_HOME}\\bin;${env.PATH}"
-    SONARQUBE = credentials('56119190-bc90-4178-99b9-f9828d79c837')
+   // SONARQUBE = credentials('56119190-bc90-4178-99b9-f9828d79c837')
     SNYK_TOKEN = credentials('18a62d38-9a06-41ca-a962-1e34055e1a96')
 }
 
@@ -23,10 +23,12 @@ pipeline {
                 bat 'mvnw.cmd test'
             }
         }
-        stage('SonarQube Analysis') {
+         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('MySonar') {
-                    bat 'mvnw.cmd sonar:sonar'
+                withCredentials([usernamePassword(credentialsId: '56119190-bc90-4178-99b9-f9828d79c837', usernameVariable: 'SONAR_USER', passwordVariable: 'SONAR_TOKEN')]) {
+                    withSonarQubeEnv('MySonar') {
+                        bat "./mvnw sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
+                    }
                 }
             }
         }
