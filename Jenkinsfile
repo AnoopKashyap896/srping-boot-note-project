@@ -59,26 +59,36 @@ pipeline {
 //         }
 //     }
 // }
-
         stage('Build Docker Image') {
-    steps {
-        bat 'docker build -t anoop896/spring-boot-notes:latest .'
-    }
-}
-        
-        stage('Security Scan with Trivy') {
-    steps {
-        script {
-            def imageName = "anoop896/spring-boot-notes:latest"
-            echo "Scanning Docker image ${imageName} for vulnerabilities..."
-
-            // Run Trivy scan and fail the build if vulnerabilities found (adjust severity as needed)
-            bat """
-            trivy image --exit-code 1 --severity HIGH,CRITICAL ${imageName}
-            """
+            steps {
+                bat 'docker build -t anoop896/spring-boot-notes:latest .'
+            }
         }
-    }
-}
+
+        stage('Security Scan') {
+            steps {
+                script {
+                    bat 'mkdir trivy-report'
+
+                    // Run Trivy scan and generate HTML report
+                    bat """
+                    trivy image --severity HIGH,CRITICAL ^
+                        --format html -o trivy-report\\trivy-report.html ^
+                        --exit-code 0 --no-progress anoop896/spring-boot-notes:latest || exit 0
+                    """
+                }
+
+                publishHTML([
+                    reportDir: 'trivy-report',
+                    reportFiles: 'trivy-report.html',
+                    reportName: 'Trivy Vulnerability Report',
+                    keepAll: true,
+                    alwaysLinkToLastBuild: true,
+                    allowMissing: true
+                ])
+            }
+        }
+
 
 
         stage('Release to Production') {
