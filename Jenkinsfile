@@ -35,7 +35,7 @@ pipeline {
         stage('Snyk Security Scan') {
             steps {
                 bat '"C:\\Users\\anoop\\AppData\\Roaming\\npm\\snyk.cmd" auth %SNYK_TOKEN%"'
-                bat '"C:\\Users\\anoop\\AppData\\Roaming\\npm\\snyk.cmd" test'
+                bat '"C:\\Users\\anoop\\AppData\\Roaming\\npm\\snyk.cmd" test --file=pom.xml --package-manager=maven'
             }
         }
         stage('Build JAR') {
