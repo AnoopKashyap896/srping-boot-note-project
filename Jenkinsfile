@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     environment {
         JAVA_HOME = "C:\\Program Files\\Java\\jdk-17"
         PATH = "${env.JAVA_HOME}\\bin;${env.PATH}"
@@ -42,12 +41,6 @@ pipeline {
             }
         }
 
-        stage('Snyk Security Scan (Skipped)') {
-            steps {
-                echo 'Skipping Snyk Security Scan due to authentication issues.'
-            }
-        }
-
         stage('Build JAR') {
             steps {
                 bat 'mvnw.cmd clean package -DskipTests'
@@ -57,40 +50,37 @@ pipeline {
         stage('Deploy to Docker') {
             steps {
                 script {
-                    bat 'docker build -t spring-boot-notes .'
-                    bat 'docker stop spring-boot-notes || exit 0'
-                    bat 'docker rm spring-boot-notes || exit 0'
-                    bat 'docker run -d -p 8082:8082 --name spring-boot-notes spring-boot-notes'
-                }
-            }
-        }
+                    def imageName = "anoop896/spring-boot-notes"
+                    def imageTag = "latest"
 
-        stage('Release to DockerHub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    script {
-                        bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
-                        bat 'docker tag spring-boot-notes %DOCKER_USER%/spring-boot-notes:prod'
-                        bat 'docker push %DOCKER_USER%/spring-boot-notes:prod'
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        bat "docker login -u %DOCKER_USER% --password-stdin < echo %DOCKER_PASS%"
+                        bat "docker build -t ${imageName}:${imageTag} ."
+                        bat "docker push ${imageName}:${imageTag}"
                     }
                 }
             }
         }
 
-        stage('Monitoring & Alerting') {
+        stage('Release to Production') {
             steps {
-                echo 'Simulating monitoring setup with Datadog or New Relic...'
-                echo 'In production, hook this with real alerting APIs/scripts.'
+                echo 'Simulated release to production (e.g., using Octopus Deploy or AWS CodeDeploy)'
+            }
+        }
+
+        stage('Monitoring and Alerting') {
+            steps {
+                echo 'Simulated integration with Datadog/New Relic for monitoring and alerts'
             }
         }
     }
 
     post {
         success {
-            echo ' Build, deploy and monitoring complete!'
+            echo 'Build, Docker deploy, and simulation of release/monitoring stages completed.'
         }
         failure {
-            echo ' Something failed. Investigate the logs.'
+            echo 'Pipeline failed during one of the stages.'
         }
     }
 }
