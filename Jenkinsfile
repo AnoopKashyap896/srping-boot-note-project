@@ -12,30 +12,30 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                sh './mvnw clean install -DskipTests'
+                bat './mvnw clean install -DskipTests'
             }
         }
         stage('Run Tests') {
             steps {
-                sh './mvnw test'
+                bat './mvnw test'
             }
         }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh './mvnw sonar:sonar'
+                    bat './mvnw sonar:sonar'
                 }
             }
         }
         stage('Snyk Security Scan') {
             steps {
-                sh "snyk auth $SNYK_TOKEN"
-                sh 'snyk test'
+                bat "snyk auth $SNYK_TOKEN"
+                bat 'snyk test'
             }
         }
         stage('Build JAR') {
             steps {
-                sh './mvnw clean package -DskipTests'
+                bat './mvnw clean package -DskipTests'
             }
         }
         stage('Deploy to Heroku') {
