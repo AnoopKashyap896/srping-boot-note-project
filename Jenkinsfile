@@ -35,36 +35,51 @@ pipeline {
             }
         }
 
-        stage('Snyk Authentication') {
-            steps {
-                bat 'snyk auth %SNYK_TOKEN%'
-            }
-        }
-
         stage('Build JAR') {
             steps {
                 bat 'mvnw.cmd clean package -DskipTests'
             }
         }
 
-        stage('Deploy to Docker') {
+//         stage('Deploy to Docker') {
+//     steps {
+//         script {
+//             def imageName = "anoop896/spring-boot-notes"
+//             def imageTag = "latest"
+
+//             withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+//                 bat """
+//                 echo %DOCKER_PASS% > docker-pass.txt
+//                 docker login -u %DOCKER_USER% --password-stdin < docker-pass.txt
+//                 del docker-pass.txt
+//                 docker build -t ${imageName}:${imageTag} .
+//                 docker push ${imageName}:${imageTag}
+//                 """
+//             }
+//         }
+//     }
+// }
+
+        stage('Build Docker Image') {
+    steps {
+        bat 'docker build -t anoop896/spring-boot-notes:latest .'
+    }
+}
+        
+        stage('Security Scan with Trivy') {
     steps {
         script {
-            def imageName = "anoop896/spring-boot-notes"
-            def imageTag = "latest"
+            def imageName = "anoop896/spring-boot-notes:latest"
+            echo "Scanning Docker image ${imageName} for vulnerabilities..."
 
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                bat """
-                echo %DOCKER_PASS% > docker-pass.txt
-                docker login -u %DOCKER_USER% --password-stdin < docker-pass.txt
-                del docker-pass.txt
-                docker build -t ${imageName}:${imageTag} .
-                docker push ${imageName}:${imageTag}
-                """
-            }
+            // Run Trivy scan and fail the build if vulnerabilities found (adjust severity as needed)
+            bat """
+            trivy image --exit-code 1 --severity HIGH,CRITICAL ${imageName}
+            """
         }
     }
 }
+
 
         stage('Release to Production') {
             steps {
