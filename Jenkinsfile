@@ -72,7 +72,7 @@ pipeline {
                     bat 'if not exist trivy-report mkdir trivy-report'
 
                     bat '''
-                        curl -L https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o trivy-report/html.tpl
+                if not exist trivy-report\\html.tpl curl -L https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o trivy-report\\html.tpl
                     '''
                     bat '''
                         trivy image --severity HIGH,CRITICAL ^
