@@ -1,10 +1,10 @@
 pipeline {
     agent any
     environment {
-        SONARQUBE = credentials('56119190-bc90-4178-99b9-f9828d79c837') // Replace with your SonarQube token ID
-        SNYK_TOKEN = credentials('18a62d38-9a06-41ca-a962-1e34055e1a96') // Replace with your Snyk API token ID
+        SONARQUBE = credentials('56119190-bc90-4178-99b9-f9828d79c837') // SonarQube token ID
+        SNYK_TOKEN = credentials('18a62d38-9a06-41ca-a962-1e34055e1a96') // Snyk API token ID
     }
-   stages {
+    stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/AnoopKashyap896/srping-boot-note-project.git'
@@ -12,30 +12,30 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                bat './mvnw clean install -DskipTests'
+                bat 'mvnw.cmd clean install -DskipTests'
             }
         }
         stage('Run Tests') {
             steps {
-                bat './mvnw test'
+                bat 'mvnw.cmd test'
             }
         }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat './mvnw sonar:sonar'
+                    bat 'mvnw.cmd sonar:sonar'
                 }
             }
         }
         stage('Snyk Security Scan') {
             steps {
-                bat "snyk auth $SNYK_TOKEN"
+                bat "snyk auth %SNYK_TOKEN%"
                 bat 'snyk test'
             }
         }
         stage('Build JAR') {
             steps {
-                bat './mvnw clean package -DskipTests'
+                bat 'mvnw.cmd clean package -DskipTests'
             }
         }
         stage('Deploy to Heroku') {
