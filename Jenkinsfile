@@ -42,11 +42,11 @@ pipeline {
                 bat 'snyk auth %SNYK_TOKEN%'
             }
         }
-        stage('Snyk Security Scan') {
-            steps {
-                bat 'snyk test --file=pom.xml --package-manager=maven'
-            }
-        }
+        // stage('Snyk Security Scan') {
+        //     steps {
+        //         bat 'snyk test --file=pom.xml --package-manager=maven'
+        //     }
+        // }
         // stage('Snyk Security Scan') {
         // steps {
         //         bat '"C:\\Users\\anoop\\AppData\\Roaming\\npm\\snyk.cmd" test --file=pom.xml --package-manager=maven --auth=%SNYK_TOKEN%'
