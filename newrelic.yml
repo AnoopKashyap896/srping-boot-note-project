@@ -1,0 +1,14 @@
+common: &default_settings
+  license_key: 'NRAK-7JWDSHXU017CRKA5ZIYQVA9L6FK'
+  app_name: 'SpringBootNotesApp'
+  log_level: info
+  audit_mode: false
+  enable_log_forwarding: false
+  distributed_tracing:
+    enabled: true
+
+development:
+  <<: *default_settings
+
+production:
+  <<: *default_settings
