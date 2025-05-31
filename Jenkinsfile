@@ -5,7 +5,7 @@ pipeline {
         // Global environment variables
         PROJECT_NAME = 'MyApp'
         SONARQUBE_SERVER = 'SonarQube-Server'
-        SNYK_TOKEN = credentials('snyk-api-token')
+        SNYK_TOKEN = credentials('db0be2a3-2b59-4c6b-ba14-c0abf1f3cc2e')
         MAVEN_OPTS = '-Dmaven.test.failure.ignore=true'
     }
 
@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "Cloning source code from Git"
-                git url: 'https://github.com/your-org/your-repo.git', branch: 'main'
+                git url: 'https://github.com/AnoopKashyap896/srping-boot-note-project.git', branch: 'main'
             }
         }
 
