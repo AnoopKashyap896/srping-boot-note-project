@@ -69,7 +69,7 @@ pipeline {
             steps {
                 script {
                     // Create directory for report
-                    bat 'mkdir trivy-report'
+                    bat 'if not exist trivy-report mkdir trivy-report'
 
                     bat '''
                         curl -L https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o trivy-report/html.tpl
