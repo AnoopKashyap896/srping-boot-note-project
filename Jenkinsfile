@@ -8,28 +8,31 @@ pipeline {
     }
     stage('Install Dependencies') {
       steps {
-        sh 'npm install'
+        bat 'npm install'
       }
     }
-    // Insert Snyk Scan here
+    stage('Install Snyk CLI') {
+      steps {
+        bat 'npm install -g snyk'
+      }
+    }
     stage('Snyk Scan') {
       steps {
         withCredentials([string(credentialsId: 'snyk-api-token', variable: 'SNYK_TOKEN')]) {
-          sh 'snyk auth $SNYK_TOKEN'
-          sh 'snyk test'
+          bat 'snyk auth %SNYK_TOKEN%'
+          bat 'snyk test'
         }
       }
     }
     stage('Build') {
       steps {
-        // Your build steps here
+        echo 'Build steps here...'
       }
     }
     stage('SonarQube Analysis') {
       steps {
-        // Your SonarQube steps here
+        echo 'SonarQube steps here...'
       }
     }
-    // Additional stages...
   }
 }
