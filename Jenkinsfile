@@ -1,11 +1,10 @@
 pipeline {
     agent any
     environment {
-        SONARQUBE = credentials('squ_e62e77bb820afb01a5c548bcea0a884fd59c5d4d') // Replace with your SonarQube token ID
-        SNYK_TOKEN = credentials('db0be2a3-2b59-4c6b-ba14-c0abf1f3cc2e') // Replace with your Snyk API token ID
+        SONARQUBE = credentials('56119190-bc90-4178-99b9-f9828d79c837') // Replace with your SonarQube token ID
+        SNYK_TOKEN = credentials('18a62d38-9a06-41ca-a962-1e34055e1a96') // Replace with your Snyk API token ID
     }
-   
-    stages {
+   stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/AnoopKashyap896/srping-boot-note-project.git'
@@ -13,50 +12,35 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                script {
-                    sh './mvnw clean install -DskipTests'
-                }
+                sh './mvnw clean install -DskipTests'
             }
         }
         stage('Run Tests') {
             steps {
-                script {
-                    sh './mvnw test'
-                }
+                sh './mvnw test'
             }
         }
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    withSonarQubeEnv('SonarQube') {
-                        sh './mvnw sonar:sonar'
-                    }
+                withSonarQubeEnv('SonarQube') {
+                    sh './mvnw sonar:sonar'
                 }
             }
         }
         stage('Snyk Security Scan') {
             steps {
-                script {
-                    withCredentials([string(credentialsId: 'snyk-api-token', variable: 'SNYK_TOKEN')]) {
-                        sh 'snyk auth $SNYK_TOKEN'
-                        sh 'snyk test'
-                    }
-                }
+                sh "snyk auth $SNYK_TOKEN"
+                sh 'snyk test'
             }
         }
         stage('Build JAR') {
             steps {
-                script {
-                    sh './mvnw clean package -DskipTests'
-                }
+                sh './mvnw clean package -DskipTests'
             }
         }
         stage('Deploy to Heroku') {
             steps {
-                script {
-                    echo 'Build and deployment successful!'
-                    }
-                }
+                echo 'Build and deployment successful!'
             }
         }
     }
@@ -68,3 +52,4 @@ pipeline {
             echo 'Build or deployment failed.'
         }
     }
+}
