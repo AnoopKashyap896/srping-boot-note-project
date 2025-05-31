@@ -68,17 +68,21 @@ pipeline {
         stage('Security Scan') {
             steps {
                 script {
+                    // Create directory for report
                     bat 'mkdir trivy-report'
 
-                    // Run Trivy scan and generate HTML report
-                    bat """
-                    trivy image --severity HIGH,CRITICAL ^
-                        --format html -o trivy-report\\trivy-report.html ^
+                    bat '''
+                        curl -L https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o trivy-report/html.tpl
+                    '''
+                    bat '''
+                        trivy image --severity HIGH,CRITICAL ^
+                        --format template --template "@trivy-report\\html.tpl" ^
+                        -o trivy-report\\trivy-report.html ^
                         --exit-code 0 --no-progress anoop896/spring-boot-notes:latest || exit 0
-                    """
+                    '''
                 }
 
-                publishHTML([
+                publishHTML(target: [
                     reportDir: 'trivy-report',
                     reportFiles: 'trivy-report.html',
                     reportName: 'Trivy Vulnerability Report',
@@ -88,6 +92,7 @@ pipeline {
                 ])
             }
         }
+
 
 
 
