@@ -60,7 +60,7 @@ pipeline {
                     bat 'docker build -t spring-boot-notes .'
                     bat 'docker stop spring-boot-notes || exit 0'
                     bat 'docker rm spring-boot-notes || exit 0'
-                    bat 'docker run -d -p 8080:8080 --name spring-boot-notes spring-boot-notes'
+                    bat 'docker run -d -p 8082:8082 --name spring-boot-notes spring-boot-notes'
                 }
             }
         }
@@ -87,10 +87,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build, deploy and monitoring complete!'
+            echo ' Build, deploy and monitoring complete!'
         }
         failure {
-            echo '❌ Something failed. Investigate the logs.'
+            echo ' Something failed. Investigate the logs.'
         }
     }
 }
